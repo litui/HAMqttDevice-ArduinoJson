@@ -1,6 +1,8 @@
-# HAMqttDevice
+# HAMqttDevice-ArduinoJson
 
 A simple library that allow an easy json generation of MQTT Discovery payloads intended to be sent to Home Assistant.
+
+This variant replaces use of `vector` with the `ArduinoJson` library for (higher overhead but) cleaner 
 
 ## How to use
 

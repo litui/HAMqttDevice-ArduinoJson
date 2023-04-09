@@ -90,19 +90,13 @@ HAMqttDevice &HAMqttDevice::addConfigVar(const String &name, const String &value
     return *this;
 }
 
-HAMqttDevice &HAMqttDevice::addConfigVar(const String &name, JsonObject &value)
+HAMqttDevice &HAMqttDevice::addConfigVar(const String &name, JsonDocument &value)
 {
     _configVars[name] = value;
     return *this;
 }
 
-HAMqttDevice &HAMqttDevice::addConfigVar(const String &name, JsonArray &value)
-{
-    _configVars[name] = value;
-    return *this;
-}
-
-HAMqttDevice &HAMqttDevice::addConfigVar(const String &name, JsonVariant &value)
+HAMqttDevice &HAMqttDevice::addConfigVarRaw(const String &name, const String &value)
 {
     _configVars[name] = value;
     return *this;

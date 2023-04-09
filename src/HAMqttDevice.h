@@ -49,9 +49,8 @@ public:
     HAMqttDevice &enableAttributesTopic();
 
     HAMqttDevice &addConfigVar(const String &key, const String &value);
-    HAMqttDevice &addConfigVar(const String &key, JsonObject &value);
-    HAMqttDevice &addConfigVar(const String &key, JsonArray &value);
-    HAMqttDevice &addConfigVar(const String &key, JsonVariant &value);
+    HAMqttDevice &addConfigVar(const String &key, JsonDocument &value);
+    HAMqttDevice &addConfigVarRaw(const String &key, const String &value);
     HAMqttDevice &addAttribute(const String &key, const String &value);
     HAMqttDevice &clearAttributes();
 
