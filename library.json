@@ -1,19 +1,23 @@
 {
-    "name":"HAMqttDevice",
+    "name":"HAMqttDevice-ArduinoJson",
     "description":"A library that provides tools to simplify MQTT discovery implementation for Home Assistant",
     "keywords":"mqtt,wifi,iot,homeassistant",
     "authors": [
       {
         "name": "Patrick Lapointe",
+        "maintainer": false
+      },
+      {
+        "name": "Aria Burrell",
         "maintainer": true
       }
     ],
     "repository":
     {
       "type": "git",
-      "url": "https://github.com/plapointe6/HAMqttDevice.git"
+      "url": "https://github.com/litui/HAMqttDevice-ArduinoJson.git"
     },
-    "version": "1.4.0",
+    "version": "1.4.1",
     "frameworks": "arduino",
     "platforms": ["espressif8266", "espressif32"]
   }

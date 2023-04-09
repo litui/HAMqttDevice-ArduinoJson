@@ -2,7 +2,7 @@
 #define HA_MQTT_DEVICE_H
 
 #include "Arduino.h"
-#include <vector>
+#include "ArduinoJson.h"
 
 class HAMqttDevice
 {
@@ -16,6 +16,7 @@ public:
         FAN,
         LIGHT,
         LOCK,
+        SELECT,
         SENSOR,
         SWITCH,
         CLIMATE,
@@ -32,21 +33,8 @@ private:
     String _identifier;
     String _topic;
 
-    // Config variables handling
-    struct ConfigVar
-    {
-        String key;
-        String value;
-    };
-    std::vector<ConfigVar> _configVars;
-
-    // Device attributes handling
-    struct Attribute
-    {
-        String key;
-        String value;
-    };
-    std::vector<Attribute> _attributes;
+    DynamicJsonDocument _configVars = DynamicJsonDocument(2048);
+    DynamicJsonDocument _attributes = DynamicJsonDocument(2048);
 
 public:
     HAMqttDevice(
@@ -61,6 +49,9 @@ public:
     HAMqttDevice &enableAttributesTopic();
 
     HAMqttDevice &addConfigVar(const String &key, const String &value);
+    HAMqttDevice &addConfigVar(const String &key, JsonObject &value);
+    HAMqttDevice &addConfigVar(const String &key, JsonArray &value);
+    HAMqttDevice &addConfigVar(const String &key, JsonVariant &value);
     HAMqttDevice &addAttribute(const String &key, const String &value);
     HAMqttDevice &clearAttributes();
 

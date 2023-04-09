@@ -1,5 +1,7 @@
 #include "HAMqttDevice.h"
 
+DynamicJsonDocument jsonPayload(2048);
+
 HAMqttDevice::HAMqttDevice(
     const String &name,
     const DeviceType type,
@@ -27,6 +29,7 @@ HAMqttDevice::HAMqttDevice(
     case DeviceType::LIGHT:
     case DeviceType::LOCK:
     case DeviceType::NUMBER:
+    case DeviceType::SELECT:
     case DeviceType::SWITCH:
     case DeviceType::BUTTON:
         enableCommandTopic();
@@ -73,13 +76,41 @@ HAMqttDevice &HAMqttDevice::enableAttributesTopic()
 
 HAMqttDevice &HAMqttDevice::addConfigVar(const String &name, const String &value)
 {
-    _configVars.push_back({name, value});
+    if (value[0] == '{') {
+        DynamicJsonDocument dest(256);
+        deserializeJson(dest, value);
+        _configVars[name] = dest;
+    } else if (value[0] == '[') {
+        DynamicJsonDocument dest(256);
+        deserializeJson(dest, value);
+        _configVars[name] = dest;
+    } else {
+        _configVars[name] = value;
+    }
+    return *this;
+}
+
+HAMqttDevice &HAMqttDevice::addConfigVar(const String &name, JsonObject &value)
+{
+    _configVars[name] = value;
+    return *this;
+}
+
+HAMqttDevice &HAMqttDevice::addConfigVar(const String &name, JsonArray &value)
+{
+    _configVars[name] = value;
+    return *this;
+}
+
+HAMqttDevice &HAMqttDevice::addConfigVar(const String &name, JsonVariant &value)
+{
+    _configVars[name] = value;
     return *this;
 }
 
 HAMqttDevice &HAMqttDevice::addAttribute(const String &name, const String &value)
 {
-    _attributes.push_back({name, value});
+    _attributes[name] = value;
     return *this;
 }
 
@@ -91,46 +122,18 @@ HAMqttDevice &HAMqttDevice::clearAttributes()
 
 const String HAMqttDevice::getConfigPayload() const
 {
-    String configPayload = "{";
+    char retPayload[1024] = "";
+    size_t json_size = serializeJson(_configVars, retPayload);
 
-    for (uint8_t i = 0; i < _configVars.size(); i++)
-    {
-        configPayload.concat('"');
-        configPayload.concat(_configVars[i].key);
-        configPayload.concat("\":");
-
-        bool valueIsDictionnary = _configVars[i].value[0] == '{';
-
-        if (!valueIsDictionnary)
-            configPayload.concat('"');
-
-        configPayload.concat(_configVars[i].value);
-
-        if (!valueIsDictionnary)
-            configPayload.concat('"');
-
-        configPayload.concat(',');
-    }
-    configPayload.setCharAt(configPayload.length() - 1, '}');
-
-    return configPayload;
+    return retPayload;
 }
 
 const String HAMqttDevice::getAttributesPayload() const
 {
-    String attrPayload = "{";
+    char retPayload[1024] = "";
+    size_t json_size = serializeJson(_attributes, retPayload);
 
-    for (uint8_t i = 0; i < _attributes.size(); i++)
-    {
-        attrPayload.concat('"');
-        attrPayload.concat(_attributes[i].key);
-        attrPayload.concat("\":\"");
-        attrPayload.concat(_attributes[i].value);
-        attrPayload.concat("\",");
-    }
-    attrPayload.setCharAt(attrPayload.length() - 1, '}');
-
-    return attrPayload;
+    return retPayload;
 }
 
 String HAMqttDevice::deviceTypeToStr(DeviceType type)
@@ -151,6 +154,8 @@ String HAMqttDevice::deviceTypeToStr(DeviceType type)
         return "light";
     case DeviceType::LOCK:
         return "lock";
+    case DeviceType::SELECT:
+        return "select";
     case DeviceType::SENSOR:
         return "sensor";
     case DeviceType::SWITCH:
